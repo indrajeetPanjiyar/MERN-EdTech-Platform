@@ -1,4 +1,4 @@
-const BASE_URL =  "https://mern-edtech-backend-arxt.onrender.com/api/v1";
+const BASE_URL =  "https://mern-edtech-backend-arxt.onrender.com";
 
 // AUTH ENDPOINTS
 export const endpoints = {
