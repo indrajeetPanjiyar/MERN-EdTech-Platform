@@ -55,8 +55,8 @@ const Home = () => {
                 </div>
 
                 {/* Video */}
-                <div className="mx-3 my-7 h-[24.5rem] w-[43.59rem] top-[24.75rem] left-[10.75rem] shadow-[10px_-5px_50px_-5px] shadow-blue-200">
-                    <video className="shadow-[20px_20px_rgba(255,255,255)]"
+                <div className="relative mx-auto my-7 w-[90%] max-w-[18rem] md:max-w-[43.59rem] shadow-[10px_-5px_50px_-5px] shadow-blue-200 rounded-sm overflow-hidden">
+                    <video className="w-full h-auto object-cover shadow-[20px_20px_rgba(255,255,255)]"
                     muted
                     loop
                     autoPlay>
