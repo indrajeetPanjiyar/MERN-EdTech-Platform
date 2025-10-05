@@ -1,4 +1,4 @@
-const BASE_URL = "https://mern-edtech-backend-sq51.onrender.com/api/v1";
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // AUTH ENDPOINTS
 export const endpoints = {
