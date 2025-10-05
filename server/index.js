@@ -24,8 +24,7 @@ app.use(cookieParser());
 // front end se connect karta hai
 app.use(
 	cors({
-		origin:["https://mern-ed-tech-frontend.vercel.app"],
-		methods:["GET", "POST", "PUT", "DELETE"],
+		origin:"http://localhost:3000",
 		credentials:true,
 	})
 )
