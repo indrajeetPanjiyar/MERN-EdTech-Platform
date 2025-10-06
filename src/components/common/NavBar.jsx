@@ -141,7 +141,8 @@ const NavBar = () => {
                     }
                 </div>
 
-                <button className="mr-4 md:hidden"> 
+                <button className="mr-4 md:hidden"
+                    onClick={handleClickMenu}> 
                     <AiOutlineMenu fontSize={24} fill="#AFB2BF" /> 
                 </button>
 
