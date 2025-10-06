@@ -4,6 +4,9 @@ import { FaAngleDown } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { FaCartShopping } from "react-icons/fa6";
 import { AiOutlineMenu } from "react-icons/ai";
+import { FaInfoCircle, FaPhoneAlt } from "react-icons/fa";
+import { FiLogIn } from "react-icons/fi";
+import { FaUserPlus } from "react-icons/fa6";
 
 
 import logo from "../../assets/Logo/Logo-Full-Light.png";
@@ -21,6 +24,16 @@ const NavBar = () => {
     
 
     const [subLinks, setSubLinks] = useState([]);
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+
+    const handleClickMenu = () => {
+        if(isOpenMenu === false){
+            setIsOpenMenu(true);
+        }
+        else{
+            setIsOpenMenu(false);
+        }
+    }
 
     const fetchSublinks = async() => {
         try{
@@ -131,6 +144,50 @@ const NavBar = () => {
                 <button className="mr-4 md:hidden"> 
                     <AiOutlineMenu fontSize={24} fill="#AFB2BF" /> 
                 </button>
+
+                {
+                    isOpenMenu && (
+                        <div
+                            className="absolute top-16 right-4 z-[1000] flex flex-col w-44 rounded-lg bg-richblack-800 text-richblack-25 shadow-lg border border-richblack-700 md:hidden"
+                        >
+                            <Link
+                                to="/about"
+                                onClick={() => setIsOpenMenu(false)}
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
+                            >
+                                <FaInfoCircle className="text-yellow-50" />
+                                <span>About Us</span>
+                            </Link>
+
+                            <Link
+                                to="/contact"
+                                onClick={() => setIsOpenMenu(false)}
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
+                            >
+                                <FaPhoneAlt className="text-yellow-50" />
+                                <span>Contact Us</span>
+                            </Link>
+
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpenMenu(false)}
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
+                            >
+                                <FiLogIn className="text-yellow-50" />
+                                <span>Login</span>
+                            </Link>
+
+                            <Link
+                                to="/signup"
+                                onClick={() => setIsOpenMenu(false)}
+                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
+                            >
+                                <FaUserPlus className="text-yellow-50" />
+                                <span>Signup</span>
+                            </Link>
+                        </div>
+                    )
+                }
 
             </div>
 
