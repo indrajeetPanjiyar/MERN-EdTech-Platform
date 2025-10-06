@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link, matchPath, useLocation } from "react-router-dom";
+import { Link, matchPath, useLocation, useNavigate } from "react-router-dom";
 import { FaAngleDown } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaCartShopping } from "react-icons/fa6";
 import { AiOutlineMenu } from "react-icons/ai";
-import { FaInfoCircle, FaPhoneAlt } from "react-icons/fa";
+
 import { FiLogIn } from "react-icons/fi";
 import { FaUserPlus } from "react-icons/fa6";
+import { VscDashboard, VscSignOut } from "react-icons/vsc";
 
 
 import logo from "../../assets/Logo/Logo-Full-Light.png";
@@ -14,6 +15,7 @@ import {NavbarLinks} from "../../data/navbar-links";
 import { apiConnector } from "../../services/apiconnector";
 import { categories } from "../../services/apis";
 import ProfileDropdown from "../core/Auth/ProfileDropdown";
+import { logout } from "../../services/operations/authAPI";
 
 
 const NavBar = () => {
@@ -21,19 +23,13 @@ const NavBar = () => {
     const {token} = useSelector( (state) => state.auth);
     const {user} = useSelector( (state) => state.profile);
     const {totalItems} = useSelector( (state) => state.cart);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     
 
     const [subLinks, setSubLinks] = useState([]);
+    const [showCatalog, setShowCatalog] = useState(false);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
-
-    const handleClickMenu = () => {
-        if(isOpenMenu === false){
-            setIsOpenMenu(true);
-        }
-        else{
-            setIsOpenMenu(false);
-        }
-    }
 
     const fetchSublinks = async() => {
         try{
@@ -142,53 +138,114 @@ const NavBar = () => {
                 </div>
 
                 <button className="mr-4 md:hidden"
-                    onClick={handleClickMenu}> 
-                    <AiOutlineMenu fontSize={24} fill="#AFB2BF" /> 
+                onClick={() => setIsOpenMenu((prev) => !prev)}> 
+                    <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
                 </button>
 
-                {
-                    isOpenMenu && (
-                        <div
-                            className="absolute top-16 right-4 z-[1000] flex flex-col w-44 rounded-lg bg-richblack-800 text-richblack-25 shadow-lg border border-richblack-700 md:hidden"
+                {isOpenMenu && (
+                <div className="absolute top-16 right-4 z-[1000] flex flex-col w-56 rounded-lg bg-richblack-800 text-richblack-25 shadow-lg border border-richblack-700 md:hidden max-h-[80vh] overflow-y-auto">
+
+                    {/* Navbar Links for mobile */}
+                    {NavbarLinks.map((link, index) => (
+                    <div key={index} className="flex flex-col">
+                        {link.title === "Catalog" ? (
+                        <>
+                            {/* Catalog header */}
+                            <div
+                            onClick={() => setShowCatalog((prev) => !prev)}
+                            className="flex items-center justify-between gap-2 px-4 py-2 font-semibold bg-richblack-900 border-t border-richblack-700 cursor-pointer hover:text-yellow-25 transition-all"
+                            >
+                            <span>{link.title}</span>
+                            <FaAngleDown
+                                className={`text-yellow-50 transition-transform duration-300 ${
+                                showCatalog ? "rotate-180" : "rotate-0"
+                                }`}
+                            />
+                            </div>
+
+                            {/* Dropdown (animated) */}
+                            <div
+                            className={`overflow-hidden transition-all duration-300 ease-out bg-richblack-900 ${
+                                showCatalog
+                                ? "max-h-[400px] opacity-100 translate-y-0"
+                                : "max-h-0 opacity-0 -translate-y-2"
+                            }`}
+                            >
+                            {subLinks?.map((subLink, i) => (
+                                <Link
+                                key={i}
+                                to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
+                                onClick={() => {
+                                    setIsOpenMenu(false);
+                                    setShowCatalog(false);
+                                }}
+                                className="block px-8 py-2 text-sm hover:bg-richblack-700 transition-all"
+                                >
+                                {subLink.name}
+                                </Link>
+                            ))}
+                            </div>
+                        </>
+                        ) : (
+                        <Link
+                            to={link?.path}
+                            onClick={() => setIsOpenMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
                         >
-                            <Link
-                                to="/about"
-                                onClick={() => setIsOpenMenu(false)}
-                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
-                            >
-                                <FaInfoCircle className="text-yellow-50" />
-                                <span>About Us</span>
-                            </Link>
+                            <span>{link.title}</span>
+                        </Link>
+                        )}
+                    </div>
+                    ))}
 
-                            <Link
-                                to="/contact"
-                                onClick={() => setIsOpenMenu(false)}
-                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
-                            >
-                                <FaPhoneAlt className="text-yellow-50" />
-                                <span>Contact Us</span>
-                            </Link>
+                {/* Auth / Dashboard options */}
+                {!user ? (
+                    <>
+                        <Link
+                        to="/login"
+                        onClick={() => setIsOpenMenu(false)}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all border-t border-richblack-700"
+                        >
+                        <FiLogIn className="text-yellow-50" />
+                        <span>Login</span>
+                        </Link>
 
-                            <Link
-                                to="/login"
-                                onClick={() => setIsOpenMenu(false)}
-                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
-                            >
-                                <FiLogIn className="text-yellow-50" />
-                                <span>Login</span>
-                            </Link>
+                        <Link
+                        to="/signup"
+                        onClick={() => setIsOpenMenu(false)}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
+                        >
+                        <FaUserPlus className="text-yellow-50" />
+                        <span>Signup</span>
+                        </Link>
+                    </>
+                    ) : (
+                    <>
+                        {/* Dashboard Link */}
+                        <Link
+                        to="/dashboard/my-profile"
+                        onClick={() => setIsOpenMenu(false)}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all border-t border-richblack-700"
+                        >
+                        <VscDashboard className="text-yellow-50 text-lg" />
+                        <span>Dashboard</span>
+                        </Link>
 
-                            <Link
-                                to="/signup"
-                                onClick={() => setIsOpenMenu(false)}
-                                className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all"
-                            >
-                                <FaUserPlus className="text-yellow-50" />
-                                <span>Signup</span>
-                            </Link>
-                        </div>
-                    )
-                }
+                        {/* Logout Link */}
+                        <button
+                        onClick={() => {
+                            dispatch(logout(navigate)); // same as desktop
+                            setIsOpenMenu(false);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-richblack-700 transition-all text-left"
+                        >
+                        <VscSignOut className="text-yellow-50 text-lg" />
+                        <span>Logout</span>
+                        </button>
+                    </>
+                    )}
+                </div>
+                )}
 
             </div>
 
